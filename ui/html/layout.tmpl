@@ -1,0 +1,149 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=0"
+    />
+    <meta name="description" content="POS - Bootstrap Admin Template" />
+    <meta
+      name="keywords"
+      content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive"
+    />
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Advance Database Test 1</title>
+
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/static/images/Ub_Logo.png"
+    />
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="/static/css/animate.css" />
+
+     <link rel="stylesheet" href="/static/plugins/select2/css/select2.min.css" />
+
+    <link rel="stylesheet" href="/static/css/dataTables.bootstrap4.min.css" />
+
+    <link
+      rel="stylesheet"
+      href="/static/plugins/fontawesome/css/fontawesome.min.css"
+    />
+    <link rel="stylesheet" href="/static/plugins/fontawesome/css/all.min.css" />
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div id="global-loader">
+      <div class="whirly-loader"></div>
+    </div>
+
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-left active">
+          <a href="/" class="logo">
+            <img src="/static/images/Ub_Logo.png" alt="" />
+          </a>
+          <a href="/" class="logo-small">
+            <img src="/static/images/Ub_Logo.png" alt="" />
+          </a>
+         
+        </div>
+
+        <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+          <span class="bar-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </a>
+
+
+
+        <div class="dropdown mobile-user-menu">
+          <a
+            href="javascript:void(0);"
+            class="nav-link dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            ><i class="fa fa-ellipsis-v"></i
+          ></a>
+          <div class="dropdown-menu dropdown-menu-right">           
+            <a class="dropdown-item" href="signin.html">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+          <div id="sidebar-menu" class="sidebar-menu">
+
+           <ul>
+                        <li class="{{if eq .CurrentPage "/"}}active {{end}}">
+                            <a href="/" {{if eq .CurrentPage "/"}}class="active" {{end}}><img src="/static/images/icons/dashboard.svg" alt="img"/><span> Dashboard</span></a>
+                        </li>
+                        <li class="submenu {{if or (eq .CurrentPage "/products") (eq .CurrentPage "/product") (eq .CurrentPage "/categories") (eq .CurrentPage "/category") (eq .CurrentPage "/brands") (eq .CurrentPage "/brand")}}active{{end}}">
+                            <a href="javascript:void(0);"><img src="/static/images/icons/product.svg" alt="img"/><span> Product</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="/products" {{if eq .CurrentPage "/products"}}class="active" {{end}}>Product List</a></li>
+                                <li><a href="/product" {{if eq .CurrentPage "/product"}}class="active" {{end}}>Add Product</a></li>
+                                <li><a href="/categories" {{if eq .CurrentPage "/categories"}}class="active" {{end}}>Category List</a></li>
+                                <li><a href="/category" {{if eq .CurrentPage "/category"}}class="active" {{end}}>Add Category</a></li>
+                                <li><a href="/brands" {{if eq .CurrentPage "/brands"}}class="active" {{end}}>Brand List</a></li>
+                                <li><a href="/brand" {{if eq .CurrentPage "/brand"}}class="active" {{end}}>Add Brand</a></li>
+                            </ul>
+                        </li>
+                        <!--
+                        <li class="submenu {{if or (eq .CurrentPage "/newuser.html") (eq .CurrentPage "/userlists.html")}}active{{end}}">
+                            <a href="javascript:void(0);"><img src="/static/images/icons/users1.svg" alt="img"/><span> Users</span><span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="newuser.html">New User </a></li>
+                                <li><a href="userlists.html">Users List</a></li>
+                            </ul>
+                        </li>
+                        -->
+                    </ul>
+
+          </div>
+        </div>
+      </div>
+
+   
+
+      <!-- Here, we are including the 'user data' section -->
+      {{block "content" .}}{{end}}
+
+      
+    </div>
+
+    <script src="/static/js/jquery-3.6.0.min.js"></script>
+
+    <script src="/static/js/feather.min.js"></script>
+
+    <script src="/static/js/jquery.slimscroll.min.js"></script>
+
+    <script src="/static/js/jquery.dataTables.min.js" defer></script>
+    <!-- <script src="/static/js/dataTables.bootstrap4.min.js"></script> -->
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+ <script src="/static/plugins/owlcarousel/owl.carousel.min.js"></script>
+     <script src="/static/plugins/select2/js/select2.min.js"></script>
+    
+      <script src="/static/plugins/sweetalert/sweetalert2.all.min.js"></script>
+    <script src="/static/plugins/sweetalert/sweetalerts.min.js"></script>
+
+    <script src="/static/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="/static/plugins/apexchart/chart-data.js"></script>
+
+    <script src="/static/js/script.js"></script>
+
+
+
+  </body>
+</html>
+{{end}}

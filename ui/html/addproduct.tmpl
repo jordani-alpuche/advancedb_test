@@ -1,0 +1,154 @@
+{{define "content"}}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Product Add</h4>
+        <h6>Create new product</h6>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="/product"> <div class="row">
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Product Name</label>
+                <input
+                  type="text"
+                  id="ProductName"
+                  name="ProductName"
+                  placeholder="Product Name"
+                  value="{{index .FormData "ProductName"}}"
+                  class="{{if index .FormErrors "ProductName"}}is-invalid{{end}}" />
+                {{with index .FormErrors "ProductName"}}
+                  <div class="invalid-feedback d-block">{{.}}</div> {{end}}
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Category</label>
+                <select class="select" name="ProductCategoryID" id="ProductCategoryID" class="{{if index .FormErrors "ProductCategoryID"}}is-invalid{{end}}">
+                  <option value="">Choose Category</option>
+                  {{/* Loop through the Category slice passed from the handler */}}
+                  {{range .Category}}
+                    <option value="{{.ID}}"
+                      {{/* Check if FormData exists and if this category's ID matches the submitted value */}}
+                      {{if $.FormData}}
+                        {{if eq (printf "%d" .ID) (index $.FormData "ProductCategoryID")}}selected{{end}}
+                      {{end}}>
+                      {{.CategoryName}} {{/* Assuming your Category struct has 'ID' and 'Name' fields */}}
+                    </option>
+                  {{end}}
+                </select>
+                {{with index .FormErrors "ProductCategoryID"}}
+                  <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Brand</label>
+                 <select class="select" name="ProductBrandID" id="ProductBrandID" class="{{if index .FormErrors "ProductBrandID"}}is-invalid{{end}}">
+                  <option value="">Choose Brand</option>
+                   {{/* Loop through the Brand slice passed from the handler */}}
+                  {{range .Brand}}
+                     <option value="{{.ID}}"
+                      {{/* Check if FormData exists and if this brand's ID matches the submitted value */}}
+                       {{if $.FormData}}
+                        {{if eq (printf "%d" .ID) (index $.FormData "ProductBrandID")}}selected{{end}}
+                       {{end}}>
+                      {{.BrandName}} {{/* Assuming your Brand struct has 'ID' and 'Name' fields */}}
+                    </option>
+                  {{end}}
+                </select>
+                 {{with index .FormErrors "ProductBrandID"}}
+                  <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Quantity</label>
+                <input
+                  type="text" id="ProductQTY"
+                  name="ProductQTY"
+                  placeholder="Product Quantity"
+                  value="{{index .FormData "ProductQTY"}}"
+                  class="{{if index .FormErrors "ProductQTY"}}is-invalid{{end}}"
+                />
+                {{with index .FormErrors "ProductQTY"}}
+                 <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Price</label>
+                 <input
+                  type="text" step="0.01" id="ProductPrice"
+                  name="ProductPrice"
+                  placeholder="Product Price"
+                  value="{{index .FormData "ProductPrice"}}"
+                  class="{{if index .FormErrors "ProductPrice"}}is-invalid{{end}}"
+                />
+                {{with index .FormErrors "ProductPrice"}}
+                  <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label>Status</label>
+                   <select class="select" name="ProductStatus" id="ProductStatus" class="{{if index .FormErrors "ProductStatus"}}is-invalid{{end}}">
+                    <option value="">Choose Status</option>
+                    <option value="Active" {{if $.FormData}}{{if eq "Active" (index $.FormData "ProductStatus")}}selected{{end}}{{end}}>
+                      Active
+                    </option>
+                    <option value="Inactive" {{if $.FormData}}{{if eq "Inactive" (index $.FormData "ProductStatus")}}selected{{end}}{{end}}>
+                      Inactive
+                    </option>
+                     </select>
+                   {{with index .FormErrors "ProductStatus"}}
+                    <div class="invalid-feedback d-block">{{.}}</div>
+                  {{end}}
+                </div>
+              </div>
+
+            <div class="col-lg-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label>Purchase From:</label>
+                <input
+                  type="text"
+                  id="ProductPurchasedFrom"
+                  name="ProductPurchasedFrom"
+                  placeholder="Supplier or Store Name"
+                  value="{{index .FormData "ProductPurchasedFrom"}}"
+                  class="{{if index .FormErrors "ProductPurchasedFrom"}}is-invalid{{end}}"
+                />
+                {{with index .FormErrors "ProductPurchasedFrom"}}
+                  <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+
+
+            <div class="col-lg-4 col-sm-6 col-12"> <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control {{if index .FormErrors "ProductDescription"}}is-invalid{{end}}"
+                  id="ProductDescription"
+                  name="ProductDescription"
+                  placeholder="Product Description">{{index .FormData "ProductDescription"}}</textarea> {{with index .FormErrors "ProductDescription"}}
+                 <div class="invalid-feedback d-block">{{.}}</div>
+                {{end}}
+              </div>
+            </div>
+
+            <div class="col-lg-12"> <button type="submit" class="btn btn-submit me-2">Submit</button>
+                <a href="/products" class="btn btn-cancel">Cancel</a>
+            </div>
+          </div> </form>
+      </div> </div> </div> </div> {{end}}

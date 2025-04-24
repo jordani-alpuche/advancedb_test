@@ -1,0 +1,73 @@
+{{define "content"}}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Category Edit</h4>
+        <h6>Update your Category</h6>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+      <form method="POST" action="/edit-category/{{.FormData.ID}}">
+        <div class="row">
+          <div class="col-lg-3 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Category Name</label>
+               <input
+                  type="text"
+                  id="CategoryName"
+                  name="CategoryName"
+                  placeholder="Category Name"
+                  value="{{index .FormData "CategoryName"}}"
+                  class="{{if .FormErrors.CategoryName}}invalid{{end}}"
+                />
+                {{with .FormErrors.CategoryName}}
+                <div class="error">{{.}}</div>
+                {{end}}
+            </div>
+          </div>
+          <div class="col-lg-3 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Category Code</label>
+               <input
+                  type="text"
+                  id="CategoryCode"
+                  name="CategoryCode"
+                  placeholder="Category Name"
+                  value="{{index .FormData "CategoryCode"}}"
+                  class="{{if .FormErrors.CategoryCode}}invalid{{end}}"
+                />
+                {{with .FormErrors.CategoryCode}}
+                <div class="error">{{.}}</div>
+                {{end}}
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label>Description</label>
+             <textarea
+                  class="form-control"
+                  id="CategoryDescription"
+                  name="CategoryDescription"
+                  placeholder="Category Description"
+                >{{index .FormData "CategoryDescription"}}</textarea>
+                {{with .FormErrors.CategoryDescription}}
+                <div class="error">{{.}}</div>
+                {{end}}
+            </div>
+          </div>
+        
+
+          <div class="col-lg-12">
+            <button type="submit" class="btn btn-submit me-2">Update</button>
+              <a href="/categories" class="btn btn-cancel">Cancel</a>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

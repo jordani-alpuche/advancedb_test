@@ -1,0 +1,68 @@
+{{define "content"}}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Product Details</h4>
+        <h6>Full details of a product</h6>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8 col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="product-header">
+              
+             
+            </div>
+            <div class="productdetails">
+              <ul class="product-bar">
+                <li>
+                  <h4>Product</h4>
+                  <h6>{{index .FormData "ProductName"}}</h6>
+                </li>
+                  <li>
+                  <h4>Category</h4>
+                  <h6>{{ if .Category }}{{ (index .Category 0).CategoryName }}{{ else }}N/A{{ end }}</h6>
+                </li>
+                <li>
+                  <h4>Brand</h4>
+                  <h6>{{ if .Brand }}{{ (index .Brand 0).BrandName }}{{ else }}N/A{{ end }}</h6>
+                </li>
+             
+                <li>
+                  <h4>Quantity</h4>
+                  <h6>{{index .FormData "ProductQTY"}}</h6>
+                </li>
+               
+                <li>
+                  <h4>Price</h4>
+                  <h6>{{index .FormData "ProductPrice"}}</h6>
+                </li>
+                <li>
+                  <h4>Status</h4>
+                  <h6>{{index .FormData "ProductStatus"}}</h6>
+                </li>
+                <li>
+                  <h4>Purchased From</h4>
+                  <h6>{{index .FormData "ProductPurchasedFrom"}}</h6>
+                </li>
+                <li>
+                  <h4>Description</h4>
+                  <h6>{{index .FormData "ProductDescription"}}</h6>
+                </li>
+              </ul>
+            </div>
+
+            <a href="/products" class="btn btn-cancel">Cancel</a>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
+{{end}}

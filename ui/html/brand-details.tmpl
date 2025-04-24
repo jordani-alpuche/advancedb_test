@@ -1,0 +1,43 @@
+{{define "content"}}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Brand Details</h4>
+        <h6>Full details of a brand</h6>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8 col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="product-header">
+              
+             
+            </div>
+            <div class="productdetails">
+              <ul class="product-bar">
+                <li>
+                  <h4>Brand</h4>
+                  <h6>{{index .FormData "BrandName"}}</h6>
+                </li>
+    
+                <li>
+                  <h4>Description</h4>
+                  <h6>{{index .FormData "BrandDescription"}}</h6>
+                </li>
+              </ul>
+            </div>
+
+            <a href="/brands" class="btn btn-cancel">Cancel</a>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
+{{end}}

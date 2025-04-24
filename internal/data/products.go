@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
-	"github/jordani-alpuche/test1/internal/validator"
+	"github/jordani-alpuche/test2/internal/validator"
 	"time"
 )
 
@@ -20,10 +20,11 @@ type ProductData struct {
 	ProductCreateTime time.Time `json:"product_create_time"`
 	ProductUpdateTime time.Time `json:"product_update_time"`
 	ProductPurchasedFrom string   `json:"product_purchased_from"`
+	ProductTag string `json:"product_tag"`
 
 	// --- Add fields for related names ---
-    CategoryName       string `db:"category_name"` // Optional tag for libraries like sqlx
-    BrandName          string `db:"brand_name"`    // Optional tag for libraries like sqlx
+    CategoryName       string `db:"category_name"` 
+    BrandName          string `db:"brand_name"`    
 }
 
 // ProductDataModel represents the database model for feedback entries
@@ -45,6 +46,25 @@ func ValidateProduct(v *validator.Validator, product *ProductData) {
 	v.Check(validator.MaxLength(product.ProductStatus, 50), "ProductStatus", "must not be more than 50 bytes long")
 	v.Check(validator.NotBlank(product.ProductPurchasedFrom), "ProductPurchasedFrom", "Product Purchase From must be provided")
 	v.Check(validator.MaxLength(product.ProductPurchasedFrom, 150), "ProductPurchasedFrom", "must not be more than 150 bytes long")
+}
+
+
+
+
+func (m *ProductDataModel) CountAllProducts() (int, error) {
+	var count int
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `SELECT COUNT(*) FROM products`
+
+	err := m.DB.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 // Select method fetches all product entries from the database
@@ -128,8 +148,8 @@ func (m *ProductDataModel) POST(products *ProductData) error {
 	// SQL query to insert a new products entry
 
 	query := `
-		INSERT INTO products(product_name,product_description,product_price,product_category_id,product_brand_id,product_qty,product_status,product_purchased_from,product_create_time)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO products(product_name,product_description,product_price,product_category_id,product_brand_id,product_qty,product_status,product_purchased_from,product_create_time,product_tag)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING id
 	`
 
@@ -139,7 +159,7 @@ func (m *ProductDataModel) POST(products *ProductData) error {
 	
 
 	// Insert the products into the database and get the generated ID
-	err := m.DB.QueryRowContext(ctx, query, products.ProductName, products.ProductDescription,products.ProductPrice,products.ProductCategoryID,products.ProductBrandID,products.ProductQTY,products.ProductStatus,products.ProductPurchasedFrom ,time.Now()).Scan(&products.ID)
+	err := m.DB.QueryRowContext(ctx, query, products.ProductName, products.ProductDescription,products.ProductPrice,products.ProductCategoryID,products.ProductBrandID,products.ProductQTY,products.ProductStatus,products.ProductPurchasedFrom ,time.Now(),products.ProductTag).Scan(&products.ID)
 	if err != nil {
 		return err
 	}

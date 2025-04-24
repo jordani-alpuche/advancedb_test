@@ -375,21 +375,7 @@ $(document).ready(function () {
       }
     });
   }
-  $(document).on("click", "#check_all", function () {
-    $(".checkmail").click();
-    return false;
-  });
-  if ($(".checkmail").length > 0) {
-    $(".checkmail").each(function () {
-      $(this).on("click", function () {
-        if ($(this).closest("tr").hasClass("checked")) {
-          $(this).closest("tr").removeClass("checked");
-        } else {
-          $(this).closest("tr").addClass("checked");
-        }
-      });
-    });
-  }
+
   if ($(".popover-list").length > 0) {
     var popoverTriggerList = [].slice.call(
       document.querySelectorAll('[data-bs-toggle="popover"]')
@@ -401,29 +387,7 @@ $(document).ready(function () {
   if ($(".clipboard").length > 0) {
     var clipboard = new Clipboard(".btn");
   }
-  var chatAppTarget = $(".chat-window");
-  (function () {
-    if ($(window).width() > 991) chatAppTarget.removeClass("chat-slide");
-    $(document).on(
-      "click",
-      ".chat-window .chat-users-list a.media",
-      function () {
-        if ($(window).width() <= 991) {
-          chatAppTarget.addClass("chat-slide");
-        }
-        return false;
-      }
-    );
-    $(document).on("click", "#back_user_list", function () {
-      if ($(window).width() <= 991) {
-        chatAppTarget.removeClass("chat-slide");
-      }
-      return false;
-    });
-  })();
-  $(document).on("click", ".mail-important", function () {
-    $(this).find("i.fa").toggleClass("fa-star").toggleClass("fa-star-o");
-  });
+
   var selectAllItems = "#select-all";
   var checkboxItem = ":checkbox";
   $(selectAllItems).click(function () {
@@ -530,36 +494,7 @@ $(document).ready(function () {
     s.preventDefault();
     $(".siderbar-view").removeClass("show-sidebar");
   });
-  if ($(".toggle-switch").length > 0) {
-    const toggleSwitch = document.querySelector(
-      '.toggle-switch input[type="checkbox"]'
-    );
-    const currentTheme = localStorage.getItem("theme");
-    var app = document.getElementsByTagName("BODY")[0];
-    if (currentTheme) {
-      app.setAttribute("data-theme", currentTheme);
-      if (currentTheme === "dark") {
-        toggleSwitch.checked = true;
-      }
-    }
-    function switchTheme(e) {
-      if (e.target.checked) {
-        app.setAttribute("data-theme", "dark");
-        localStorage.setItem("theme", "dark");
-      } else {
-        app.setAttribute("data-theme", "light");
-        localStorage.setItem("theme", "light");
-      }
-    }
-    toggleSwitch.addEventListener("change", switchTheme, false);
-  }
-  if (window.location.hash == "#LightMode") {
-    localStorage.setItem("theme", "dark");
-  } else {
-    if (window.location.hash == "#DarkMode") {
-      localStorage.setItem("theme", "light");
-    }
-  }
+
   $("ul.tabs li").click(function () {
     var $this = $(this);
     var $theTab = $(this).attr("id");
@@ -580,3 +515,14 @@ $(document).ready(function () {
     }
   });
 });
+
+const printButton = document.getElementById("print-button");
+
+// Check if the element was actually found on the page
+if (printButton) {
+  // Only add the event listener if the button exists
+  printButton.addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent the default link behavior
+    window.print(); // Trigger the browser's print dialog
+  });
+}

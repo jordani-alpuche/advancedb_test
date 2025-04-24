@@ -3,14 +3,16 @@
   <div class="content">
     <div class="page-header">
       <div class="page-title">
-        <h4>Category</h4>
-        <h6>Add Category</h6>
+        <h4>Category Form</h4>
+        <h6>Add/Update Category</h6>
       </div>
     </div>
 
     <div class="card">
       <div class="card-body">
-      <form method="POST" action="/category">
+       <form method="POST" action="{{if eq .CurrentPageType "create"}}/category{{else}}/edit-category/{{.FormData.ID}}{{end}}">
+        <!-- CSRF Token Field -->
+          {{ .CSRFField  }}
         <div class="row">
           <div class="col-lg-3 col-sm-6 col-12">
             <div class="form-group">
@@ -61,7 +63,7 @@
         
 
           <div class="col-lg-12">
-            <button type="submit" class="btn btn-submit me-2">Submit</button>
+             <button type="submit" class="btn btn-submit me-2">{{if eq .CurrentPageType "create"}}Submit{{else}}Update{{end}}</button>
               <a href="/categories" class="btn btn-cancel">Cancel</a>
           </div>
         </div>

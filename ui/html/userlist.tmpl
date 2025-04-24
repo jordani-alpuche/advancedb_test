@@ -1,0 +1,103 @@
+﻿{{define "content"}}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>User List</h4>
+        <h6>Manage your User</h6>
+      </div>
+      <div class="page-btn">
+        <a href="/user" class="btn btn-added"
+          ><img src="/static/images/icons/plus.svg" alt="img" />Add User</a
+        >
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+         <div class="table-top">
+          <div class="search-set">
+            <div class="search-path">
+              <a class="btn btn-filter" id="filter_search">
+                <img src="/static/images/icons/filter.svg" alt="img" />
+                <span
+                  ><img src="/static/images/icons/closes.svg" alt="img"
+                /></span>
+              </a>
+            </div>
+            <div class="search-input">
+              <a class="btn btn-searchset"
+                ><img src="/static/images/icons/search-white.svg" alt="img"
+              /></a>
+            </div>
+          </div>
+          <div class="wordset">
+            <ul>
+              <li>
+                <a id="print-button"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="print"
+                  ><img src="/static/images/icons/printer.svg" alt="img"
+                /></a>
+              </li>
+            </ul>
+          </div>
+        </div>  
+
+        <div class="table-responsive">
+          <table class="table datanew">
+            <thead>
+              <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range .User}}
+              <tr>
+                <td>{{.FirstName}}</td>
+                <td>{{.LastName}}</td>
+                <td>{{.Username}}</td>
+                <td>{{.Email}}</td>
+                <td>{{.PhoneNumber}}</td>
+                <td>{{.Role}}</td>
+                <td>
+                  {{if eq .Status "active"}}<span class="bg-lightgreen badges"
+                    >{{.Status}}</span
+                  >{{else if eq .Status "inactive"}}<span class="bg-red badges"
+                    >{{.Status}}</span
+                  >{{end}}
+                </td>
+                <!-- <td><span class="bg-lightgreen badges">{{.Status}}</span></td> -->
+                <td>
+                  <a class="me-3" href="/edit-user/{{.ID}}">
+                    <img src="/static/images/icons/edit.svg" alt="img" />
+                  </a>
+                  <a class="me-3" 
+                           href="/delete-user/{{.ID}}" 
+                           onclick="return confirm('Are you sure you want to delete this user?');"> 
+                           <img src="/static/images/icons/delete.svg" alt="img" />
+                        </a>
+                </td>
+              </tr>
+              {{else}}
+              <tr>
+                <td colspan="10">No Users found.</td>
+              </tr>
+              {{end}}
+            </tbody>
+          </table>
+        </div>
+        <!-- End Table Div-->
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

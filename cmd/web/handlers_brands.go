@@ -1,11 +1,14 @@
 package main
 
 import (
-	_ "fmt"
-	"github/jordani-alpuche/test1/internal/data"
-	"github/jordani-alpuche/test1/internal/validator"
+	"fmt"
+
+	"github/jordani-alpuche/test2/internal/data"
+	"github/jordani-alpuche/test2/internal/validator"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/csrf"
 )
 
 /*******************************************************************************************************************************************************
@@ -14,8 +17,9 @@ import (
 
 func (app *application) GETBrands(w http.ResponseWriter, r *http.Request) {
         data := NewTemplateData()
+        data.CSRFField = csrf.TemplateField(r)
         data.CurrentPage = "/brands" // Set CurrentPage here
-
+        
         brands, err := app.brandInfo.GET(0)
         if err != nil {
                 app.logger.Error("failed to fetch brands", "error", err)
@@ -25,7 +29,7 @@ func (app *application) GETBrands(w http.ResponseWriter, r *http.Request) {
 
         data.Brand = brands
 
-        err = app.render(w, http.StatusOK, "brandlist.tmpl", data)
+        err = app.render(w, r, http.StatusOK, "brandlist.tmpl", data)
         if err != nil {
                 app.logger.Error("failed to render brands page", "template", "brandlist.tmpl", "error", err)
                 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -35,11 +39,12 @@ func (app *application) GETBrands(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) createBrandForm(w http.ResponseWriter, r *http.Request) {
         data := NewTemplateData()
+        data.CSRFField = csrf.TemplateField(r)
         data.CurrentPage = "/brand" // Set CurrentPage here
-
-        err := app.render(w, http.StatusOK, "addbrand.tmpl", data)
+        data.CurrentPageType = "create"
+        err := app.render(w, r, http.StatusOK, "addupdatebrand.tmpl", data)
         if err != nil {
-                app.logger.Error("failed to render brands page", "template", "addbrand.tmpl", "error", err)
+                app.logger.Error("failed to render brands page", "template", "addupdatebrand.tmpl", "error", err)
                 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
                 return
         }
@@ -68,16 +73,18 @@ func (app *application) createBrand(w http.ResponseWriter, r *http.Request) {
         // Check for validation errors
         if !v.ValidData() {
                 data := NewTemplateData()
+                data.CSRFField = csrf.TemplateField(r)
                 data.CurrentPage = "/brand" // Set CurrentPage here
+                data.CurrentPageType = "create"
                 data.FormErrors = v.Errors
                 data.FormData = map[string]string{
                         "BrandName":        brandName,
                         "BrandDescription": brandDescription,
                 }
 
-                err := app.render(w, http.StatusUnprocessableEntity, "addbrand.tmpl", data)
+                err := app.render(w, r, http.StatusUnprocessableEntity, "addupdatebrand.tmpl", data)
                 if err != nil {
-                        app.logger.Error("failed to render brand Form", "template", "addbrand.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+                        app.logger.Error("failed to render brand Form", "template", "addupdatebrand.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
                         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
                         return
                 }
@@ -108,12 +115,13 @@ func (app *application) brandItem(w http.ResponseWriter, r *http.Request) {
                 app.logger.Error("brand not found", "id", id, "error", err)
 
                 data := NewTemplateData()
+                data.CSRFField = csrf.TemplateField(r)
                 data.FormData = map[string]string{
                         "Message": "The brand you're looking for doesn't exist.",
                 }
 
                 // Render custom 404 page
-                err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+                err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
                 if err != nil {
                         app.logger.Error("failed to render 404 page", "error", err)
                         http.Error(w, "Page not found", http.StatusNotFound)
@@ -124,13 +132,14 @@ func (app *application) brandItem(w http.ResponseWriter, r *http.Request) {
         brand := brands[0]
 
         data := NewTemplateData()
+        data.CSRFField = csrf.TemplateField(r)
 		data.CurrentPage =  "/brands"
         data.FormData = map[string]string{
                 "BrandName":        brand.BrandName,
                 "BrandDescription": brand.BrandDescription,
         }
 
-        err = app.render(w, http.StatusOK, "brand-details.tmpl", data)
+        err = app.render(w, r, http.StatusOK, "brand-details.tmpl", data)
         if err != nil {
                 app.logger.Error("failed to render viewer", "error", err)
                 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -151,11 +160,12 @@ func (app *application) updateBrandForm(w http.ResponseWriter, r *http.Request) 
                 app.logger.Error("brand not found", "id", id, "error", err)
 
                 data := NewTemplateData()
+                data.CSRFField = csrf.TemplateField(r)
                 data.FormData = map[string]string{
                         "Message": "The Brand you're looking for doesn't exist.",
                 }
 
-                err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+                err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
                 if err != nil {
                         app.logger.Error("failed to render 404 page", "error", err)
                         http.Error(w, "Page not found", http.StatusNotFound)
@@ -165,14 +175,18 @@ func (app *application) updateBrandForm(w http.ResponseWriter, r *http.Request) 
 
         brand := brands[0]
         data := NewTemplateData()
+        data.CSRFField = csrf.TemplateField(r)
         data.CurrentPage = "/brands" //Set CurrentPage here.
+        data.CurrentPageType = "update"
         data.FormData = map[string]string{
                 "ID":               strconv.FormatInt(brand.ID, 10),
                 "BrandName":        brand.BrandName,
                 "BrandDescription": brand.BrandDescription,
         }
 
-        err = app.render(w, http.StatusOK, "editbrand.tmpl", data)
+        fmt.Printf("\nbrand data: %v", brand.BrandDescription)
+
+        err = app.render(w, r, http.StatusOK, "addupdatebrand.tmpl", data)
         if err != nil {
                 app.logger.Error("failed to render viewer", "error", err)
                 http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -211,7 +225,9 @@ func (app *application) updateBrand(w http.ResponseWriter, r *http.Request) {
         // Check for validation errors
         if !v.ValidData() {
                 data := NewTemplateData()
-                // data.CurrentPage = "/brand" // Set CurrentPage here.
+                data.CSRFField = csrf.TemplateField(r)
+                data.CurrentPage = "/brand" 
+                data.CurrentPageType = "update"
                 data.FormErrors = v.Errors
                 data.FormData = map[string]string{
                         "ID":               idStr,
@@ -219,9 +235,9 @@ func (app *application) updateBrand(w http.ResponseWriter, r *http.Request) {
                         "BrandDescription": brandDescription,
                 }
 
-                err := app.render(w, http.StatusUnprocessableEntity, "editbrand.tmpl", data)
+                err := app.render(w, r, http.StatusUnprocessableEntity, "addupdatebrand.tmpl", data)
                 if err != nil {
-                        app.logger.Error("failed to render Brand Form", "template", "editbrand.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+                        app.logger.Error("failed to render Brand Form", "template", "addupdatebrand.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
                         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
                         return
                 }

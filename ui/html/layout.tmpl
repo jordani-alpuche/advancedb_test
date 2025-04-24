@@ -14,7 +14,7 @@
     />
     <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Advance Database Test 1</title>
+    <title>Advance Database Test 2</title>
 
     <link
       rel="shortcut icon"
@@ -64,19 +64,34 @@
         </a>
 
 
+        <ul class="nav user-menu">        
 
-        <div class="dropdown mobile-user-menu">
-          <a
-            href="javascript:void(0);"
-            class="nav-link dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            ><i class="fa fa-ellipsis-v"></i
-          ></a>
-          <div class="dropdown-menu dropdown-menu-right">           
-            <a class="dropdown-item" href="signin.html">Logout</a>
-          </div>
-        </div>
+          <li class="nav-item dropdown has-arrow main-drop">
+            <a
+              href="javascript:void(0);"
+              class="dropdown-toggle nav-link userset"
+              data-bs-toggle="dropdown"
+            >
+              <span class="user-img"
+                ><img src="/static/images/profiles/avator1.jpg" alt="" />
+                <span class="status online"></span
+              ></span>
+            </a>
+            <div class="dropdown-menu menu-drop-user">
+              <div class="profilename">
+                
+                <a class="dropdown-item logout pb-0" href="/logout"
+                  ><img
+                    src="/static/images/icons/log-out.svg"
+                    class="me-2"
+                    alt="img"
+                  />Logout</a
+                >
+              </div>
+            </div>
+          </li>
+         </ul>
+
       </div>
 
       <div class="sidebar" id="sidebar">
@@ -84,30 +99,30 @@
           <div id="sidebar-menu" class="sidebar-menu">
 
            <ul>
-                        <li class="{{if eq .CurrentPage "/"}}active {{end}}">
-                            <a href="/" {{if eq .CurrentPage "/"}}class="active" {{end}}><img src="/static/images/icons/dashboard.svg" alt="img"/><span> Dashboard</span></a>
-                        </li>
-                        <li class="submenu {{if or (eq .CurrentPage "/products") (eq .CurrentPage "/product") (eq .CurrentPage "/categories") (eq .CurrentPage "/category") (eq .CurrentPage "/brands") (eq .CurrentPage "/brand")}}active{{end}}">
-                            <a href="javascript:void(0);"><img src="/static/images/icons/product.svg" alt="img"/><span> Product</span><span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="/products" {{if eq .CurrentPage "/products"}}class="active" {{end}}>Product List</a></li>
-                                <li><a href="/product" {{if eq .CurrentPage "/product"}}class="active" {{end}}>Add Product</a></li>
-                                <li><a href="/categories" {{if eq .CurrentPage "/categories"}}class="active" {{end}}>Category List</a></li>
-                                <li><a href="/category" {{if eq .CurrentPage "/category"}}class="active" {{end}}>Add Category</a></li>
-                                <li><a href="/brands" {{if eq .CurrentPage "/brands"}}class="active" {{end}}>Brand List</a></li>
-                                <li><a href="/brand" {{if eq .CurrentPage "/brand"}}class="active" {{end}}>Add Brand</a></li>
-                            </ul>
-                        </li>
-                        <!--
-                        <li class="submenu {{if or (eq .CurrentPage "/newuser.html") (eq .CurrentPage "/userlists.html")}}active{{end}}">
-                            <a href="javascript:void(0);"><img src="/static/images/icons/users1.svg" alt="img"/><span> Users</span><span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="newuser.html">New User </a></li>
-                                <li><a href="userlists.html">Users List</a></li>
-                            </ul>
-                        </li>
-                        -->
+                <li class="{{if eq .CurrentPage "/"}}active {{end}}">
+                    <a href="/" {{if eq .CurrentPage "/"}}class="active" {{end}}><img src="/static/images/icons/dashboard.svg" alt="img"/><span> Dashboard</span></a>
+                </li>
+                <li class="submenu {{if or (eq .CurrentPage "/products") (eq .CurrentPage "/product") (eq .CurrentPage "/categories") (eq .CurrentPage "/category") (eq .CurrentPage "/brands") (eq .CurrentPage "/brand")}}active{{end}}">
+                    <a href="javascript:void(0);"><img src="/static/images/icons/product.svg" alt="img"/><span> Product</span><span class="menu-arrow"></span></a>
+                    <ul>
+                        <li><a href="/products" {{if eq .CurrentPage "/products"}}class="active" {{end}}>Product List</a></li>
+                        <li><a href="/product" {{if eq .CurrentPage "/product"}}class="active" {{end}}>Add Product</a></li>
+                        <li><a href="/categories" {{if eq .CurrentPage "/categories"}}class="active" {{end}}>Category List</a></li>
+                        <li><a href="/category" {{if eq .CurrentPage "/category"}}class="active" {{end}}>Add Category</a></li>
+                        <li><a href="/brands" {{if eq .CurrentPage "/brands"}}class="active" {{end}}>Brand List</a></li>
+                        <li><a href="/brand" {{if eq .CurrentPage "/brand"}}class="active" {{end}}>Add Brand</a></li>
                     </ul>
+                </li>
+                
+                <li class="submenu {{if or (eq .CurrentPage "/users") (eq .CurrentPage "/user")}}active{{end}}">
+                    <a href="javascript:void(0);"><img src="/static/images/icons/users1.svg" alt="img"/><span> Users</span><span class="menu-arrow"></span></a>
+                    <ul>
+                        <li><a href="/user" {{if eq .CurrentPage "/user"}}class="active" {{end}}>New User </a></li>
+                        <li><a href="/users" {{if eq .CurrentPage "/users"}}class="active" {{end}}>Users List</a></li>
+                    </ul>
+                </li>
+                       
+              </ul>
 
           </div>
         </div>

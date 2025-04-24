@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
-	"github/jordani-alpuche/test1/internal/validator"
+	"github/jordani-alpuche/test2/internal/validator"
 	"time"
 )
 
@@ -29,6 +29,24 @@ func ValidateCategory(v *validator.Validator, category *CategoryData) {
 	v.Check(validator.MaxLength(category.CategoryDescription, 1500), "CategoryDescription", "Category Description must not be more than 1500 bytes long")
 	v.Check(validator.NotBlank(category.CategoryCode), "CategoryCode", "Category Code must be provided")
 	v.Check(validator.MaxLength(category.CategoryCode, 150), "CategoryCode", "Category Code must not be more than 150 bytes long")
+}
+
+
+
+func (m *CategoryDataModel) CountAllCategories() (int, error) {
+	var count int
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `SELECT COUNT(*) FROM category`
+
+	err := m.DB.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 // Select method fetches all category entries from the database

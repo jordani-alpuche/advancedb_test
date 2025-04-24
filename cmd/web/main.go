@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"fmt"
 	"html/template"
 	"log/slog"
 	"os"
 	"time"
 
-	"github/jordani-alpuche/test1/internal/data"
+	"github/jordani-alpuche/test2/internal/data"
+
+	"github.com/gorilla/sessions"
 
 	_ "github.com/lib/pq"
 )
@@ -20,6 +21,8 @@ type application struct {
 	brandInfo      *data.BrandDataModel
 	categoryInfo	 *data.CategoryDataModel
 	productInfo         *data.ProductDataModel
+	userInfo 		*data.UsersDataModel
+	sessionStore  *sessions.CookieStore
 	logger        *slog.Logger
 	templateCache map[string]*template.Template
 }
@@ -27,6 +30,7 @@ type application struct {
 func main() {
 	addr := flag.String("addr", "", "HTTP network address")
 	dsn := flag.String("dsn", "", "PostgreSQL DSN")
+	secret := flag.String("secret", "3PJXnyuVxcfLdaZ92rae7S8", "Secret key for session cookies")
 
 	flag.Parse()
 
@@ -39,7 +43,6 @@ func main() {
 
 	logger.Info("database connection pool established")
 	templateCache, err := newTemplateCache()
-	logger.Info(fmt.Sprintf("template cache has %d templates", len(templateCache)))
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -47,11 +50,21 @@ func main() {
 
 	defer db.Close()
 
-	app := &application{
+	// Initialize the session store with the provided secret
+	sessionStore := sessions.NewCookieStore([]byte(*secret))
+	sessionStore.Options = &sessions.Options{
+		Secure: true,
+		MaxAge: int(12 * time.Hour),
+	}
+
+
+	app := &application{	
 		addr: addr,
 		brandInfo:      &data.BrandDataModel{DB: db},
 		categoryInfo: &data.CategoryDataModel{DB: db},
 		productInfo:         &data.ProductDataModel{DB: db},
+		userInfo: 		&data.UsersDataModel{DB: db},
+		sessionStore:  sessionStore,
 		logger:        logger,
 		templateCache: templateCache,
 	}

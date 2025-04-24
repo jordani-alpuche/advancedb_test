@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
-	"github/jordani-alpuche/test1/internal/validator"
+	"github/jordani-alpuche/test2/internal/validator"
 	"time"
 )
 
@@ -26,6 +26,26 @@ func ValidateBrands(v *validator.Validator, brand *BrandData) {
 	v.Check(validator.MaxLength(brand.BrandName, 50), "BrandName", "Brand Name must not be more than 50 bytes long")
 	v.Check(validator.NotBlank(brand.BrandDescription), "BrandDescription", "Brand Description must be provided")
 	v.Check(validator.MaxLength(brand.BrandDescription, 1500), "BrandDescription", "Brand Description must not be more than 1500 bytes long")
+}
+
+
+// This method is used to count the number of brands in the database
+// It returns a slice of BrandData and an error if any
+// It uses a context with a timeout of 3 seconds for the query
+func (m *BrandDataModel) CountAllBrands() (int, error) {
+	var count int
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `SELECT COUNT(*) FROM brand`
+
+	err := m.DB.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 // Select method fetches all brand entries from the database

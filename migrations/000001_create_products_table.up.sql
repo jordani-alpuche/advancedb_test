@@ -9,5 +9,6 @@ CREATE TABLE products(
     product_status VARCHAR(50) NOT NULL,
     product_create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     product_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    product_purchased_from VARCHAR(255)
+    product_purchased_from VARCHAR(255),
+    product_tag text
 );

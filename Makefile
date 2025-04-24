@@ -15,11 +15,11 @@ vet: fmt
 
 .PHONY: run
 run: 
-	go run ./cmd/web -addr=${ADDRESS} -dsn=${TEST_1_DB_DSN}
+	go run ./cmd/web -addr=${ADDRESS} -dsn=${TEST_2_DB_DSN} -secret=${Session_SECRET}
 
 .PHONY: db/psql
 db/psql:
-	psql ${TEST_1_DB_DSN}
+	psql ${TEST_2_DB_DSN}
 
 
 ## db/migrations/new name=$1: create a new database migration
@@ -33,11 +33,11 @@ db/migrations/new:
 .PHONY: db/migrations/up
 db/migrations/up:
 	@echo 'Running up migrations...'
-	migrate -path ./migrations -database ${TEST_1_DB_DSN} up
+	migrate -path ./migrations -database ${TEST_2_DB_DSN} up
 
 # # db/migrations/down-1: undo the last migration
 .PHONY: db/migrations/down-1
 db/migrations/down-1:
 	@echo 'Running up migrations...'
-	migrate -path ./migrations -database ${TEST_1_DB_DSN} down 1
+	migrate -path ./migrations -database ${TEST_2_DB_DSN} down 1
 

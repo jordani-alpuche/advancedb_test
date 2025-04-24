@@ -3,14 +3,16 @@
   <div class="content">
     <div class="page-header">
       <div class="page-title">
-        <h4>Brand ADD</h4>
-        <h6>Create new Brand</h6>
+        <h4>Brand Form</h4>
+        <h6>Add/Update Brand</h6>
       </div>
     </div>
 
     <div class="card">
       <div class="card-body">
-      <form method="POST" action="/brand">
+     <form method="POST" action="{{if eq .CurrentPageType "create"}}/brand{{else}}/edit-brand/{{.FormData.ID}}{{end}}">
+     <!-- CSRF Token Field -->
+          {{ .CSRFField  }}
         <div class="row">
           <div class="col-lg-3 col-sm-6 col-12">
             <div class="form-group">
@@ -28,16 +30,15 @@
                 {{end}}
             </div>
           </div>
-          <div class="col-lg-12">
+        <div class="col-lg-12">
             <div class="form-group">
               <label>Description</label>
-             <textarea class="form-control"  
+             <textarea
+                  class="form-control"
                   id="BrandDescription"
                   name="BrandDescription"
                   placeholder="Brand Description"
-                   value="{{index .FormData "BrandDescription"}}"
-                  class="{{if .FormErrors.BrandDescription}}invalid{{end}}">
-                  </textarea>            
+                >{{index .FormData "BrandDescription"}}</textarea>
                 {{with .FormErrors.BrandDescription}}
                 <div class="error">{{.}}</div>
                 {{end}}
@@ -45,7 +46,7 @@
           </div>
        
           <div class="col-lg-12">
-           <button type="submit" class="btn btn-submit me-2">Submit</button>
+            <button type="submit" class="btn btn-submit me-2">{{if eq .CurrentPageType "create"}}Submit{{else}}Update{{end}}</button>
             <a href="/brands" class="btn btn-cancel">Cancel</a>
           </div>
         </div>

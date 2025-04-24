@@ -2,18 +2,22 @@ package main
 
 import (
 	"fmt"
-	"github/jordani-alpuche/test1/internal/data"
-	"github/jordani-alpuche/test1/internal/validator"
+	"github/jordani-alpuche/test2/internal/data"
+	"github/jordani-alpuche/test2/internal/validator"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/csrf"
 )
 
+//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
 /*******************************************************************************************************************************************************
 *																Product Handlers																	   *
 ********************************************************************************************************************************************************/
 
 func (app *application) GETProducts(w http.ResponseWriter, r *http.Request) {
 	data := NewTemplateData()
+	data.CSRFField = csrf.TemplateField(r)
 	data.CurrentPage="/products"
 
 	products, err := app.productInfo.GET(0)
@@ -27,7 +31,7 @@ func (app *application) GETProducts(w http.ResponseWriter, r *http.Request) {
 	data.Product = products // 👈 Add Products to TemplateData
 
 
-	err = app.render(w, http.StatusOK, "productlist.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "productlist.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render Products page", "template", "productlist.tmpl", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -38,7 +42,9 @@ func (app *application) GETProducts(w http.ResponseWriter, r *http.Request) {
 func (app *application) createForm(w http.ResponseWriter, r *http.Request) {
 
 	data := NewTemplateData()
+	data.CSRFField = csrf.TemplateField(r)
 	data.CurrentPage="/product"
+	data.CurrentPageType="create"
 
 		// --- Fetch Brands ---
 		brands, err := app.brandInfo.GET(0) // Assuming GET(0) fetches all brands
@@ -61,9 +67,9 @@ func (app *application) createForm(w http.ResponseWriter, r *http.Request) {
 		data.Category = categories // Make sure TemplateData has a 'Category' field
 
 
-	err = app.render(w, http.StatusOK, "addproduct.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "addupdateproduct.tmpl", data)
 	if err != nil {
-		app.logger.Error("failed to render products page", "template", "addproduct.tmpl", "error", err)
+		app.logger.Error("failed to render products page", "template", "addupdateproduct.tmpl", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -94,6 +100,15 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	brandID, _ := strconv.Atoi(productBrandID)
 	qty, _ := strconv.Atoi(productQTY)
 
+	// Call the AI model to generate a product tag
+	 productTag, err := app.generateProductTag(productName, productDescription)
+	if err != nil {
+		app.logger.Error("failed to generate product tag", "error", err)
+		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
+	
 	product := &data.ProductData{		
 		ProductName:  productName,
 		ProductDescription:  productDescription,
@@ -103,6 +118,7 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 		ProductQTY:  qty,
 		ProductStatus:  productStatus,
 		ProductPurchasedFrom:  productPurchasedFrom,
+		ProductTag: productTag, // Add the generated product tag
 	}
 
 	// validate data
@@ -112,6 +128,7 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	// Check for validation errors
 	if !v.ValidData() {
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormErrors = v.Errors
 		data.FormData = map[string]string{
 			"ProductName":    productName,
@@ -148,9 +165,9 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 				// --- End RE-FETCH ---
 		
 
-		err = app.render(w, http.StatusUnprocessableEntity, "addproduct.tmpl", data)
+		err = app.render(w, r, http.StatusUnprocessableEntity, "addupdateproduct.tmpl", data)
 		if err != nil {
-			app.logger.Error("failed to render Product Form", "template", "addproduct.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+			app.logger.Error("failed to render Product Form", "template", "addupdateproduct.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -181,12 +198,13 @@ func (app *application) productItem(w http.ResponseWriter, r *http.Request) {
 		app.logger.Error("product not found", "id", id, "error", err)
 	
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormData = map[string]string{
 			"Message": "The product you're looking for doesn't exist.",
 		}
 		
 		// Render custom 404 page
-		err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+		err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
 		if err != nil {
 			app.logger.Error("failed to render 404 page", "error", err)
 			http.Error(w, "Page not found", http.StatusNotFound)
@@ -198,6 +216,7 @@ func (app *application) productItem(w http.ResponseWriter, r *http.Request) {
 
 
 	data := NewTemplateData()
+	data.CSRFField = csrf.TemplateField(r)
 	data.CurrentPage="/products"
 	data.FormData = map[string]string{
 		"ProductName":         product.ProductName,
@@ -236,7 +255,7 @@ func (app *application) productItem(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Data: %+v\n", data)
 
-	err = app.render(w, http.StatusOK, "product-details.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "product-details.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render viewer", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -257,11 +276,12 @@ func (app *application) updateForm(w http.ResponseWriter, r *http.Request){
 		app.logger.Error("product not found", "id", id, "error", err)
 	
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormData = map[string]string{
 			"Message": "The product you're looking for doesn't exist.",
 		}
 		
-		err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+		err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
 		if err != nil {
 			app.logger.Error("failed to render 404 page", "error", err)
 			http.Error(w, "Page not found", http.StatusNotFound)
@@ -271,7 +291,9 @@ func (app *application) updateForm(w http.ResponseWriter, r *http.Request){
 
 	product := products[0]
 	data := NewTemplateData()
+	data.CSRFField = csrf.TemplateField(r)
 	data.CurrentPage="/products"
+	data.CurrentPageType = "update"
 	data.FormData = map[string]string{
 		"ID":                 strconv.FormatInt(product.ID, 10), 
 		"ProductName":         product.ProductName,
@@ -304,7 +326,7 @@ func (app *application) updateForm(w http.ResponseWriter, r *http.Request){
 		// Add categories to the template data
 		data.Category = categories // Make sure TemplateData has a 'Category' field
 
-	err = app.render(w, http.StatusOK, "editproduct.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "addupdateproduct.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render viewer", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -363,6 +385,9 @@ func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 		// Check for validation errors
 		if !v.ValidData() {
 			data := NewTemplateData()
+			data.CSRFField = csrf.TemplateField(r)
+			data.CurrentPage="/products"
+			data.CurrentPageType = "update"
 			data.FormErrors = v.Errors
 			data.FormData = map[string]string{
 				"ID":                 idStr,
@@ -400,9 +425,9 @@ func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 			}
 			// --- End RE-FETCH ---
 	
-			err = app.render(w, http.StatusUnprocessableEntity, "editproduct.tmpl", data)
+			err = app.render(w, r, http.StatusUnprocessableEntity, "addupdateproduct.tmpl", data)
 			if err != nil {
-				app.logger.Error("failed to render Product Form", "template", "editproduct.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+				app.logger.Error("failed to render Product Form", "template", "addupdateproduct.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}

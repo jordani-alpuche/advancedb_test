@@ -2,10 +2,12 @@ package main
 
 import (
 	_ "fmt"
-	"github/jordani-alpuche/test1/internal/data"
-	"github/jordani-alpuche/test1/internal/validator"
+	"github/jordani-alpuche/test2/internal/data"
+	"github/jordani-alpuche/test2/internal/validator"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/csrf"
 )
 
 /*******************************************************************************************************************************************************
@@ -25,9 +27,10 @@ func (app *application) GETCategories(w http.ResponseWriter, r *http.Request) {
 
 	
 	data.Category = categories 
+	data.CSRFField = csrf.TemplateField(r)
 
 
-	err = app.render(w, http.StatusOK, "categorylist.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "categorylist.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render category page", "template", "categorylist.tmpl", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -39,10 +42,12 @@ func (app *application) createCategoryForm(w http.ResponseWriter, r *http.Reques
 
 	data := NewTemplateData()
 	data.CurrentPage="/category"
+	data.CurrentPageType="create"
+	data.CSRFField = csrf.TemplateField(r)
 
-	err:= app.render(w, http.StatusOK, "addcategory.tmpl", data)
+	err:= app.render(w, r, http.StatusOK, "addupdatecategory.tmpl", data)
 	if err != nil {
-		app.logger.Error("failed to render category page", "template", "addcategory.tmpl", "error", err)
+		app.logger.Error("failed to render category page", "template", "addupdatecategory.tmpl", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -77,16 +82,19 @@ func (app *application) createCategory(w http.ResponseWriter, r *http.Request) {
 	// Check for validation errors
 	if !v.ValidData() {
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormErrors = v.Errors
+		data.CurrentPage="/category"
+		data.CurrentPageType="create"
 		data.FormData = map[string]string{
 			"CategoryName":    categoryName,
 			"CategoryDescription":   categoryDescription,
 			"CategoryCode":    categoryCode,
 		}
 
-		err := app.render(w, http.StatusUnprocessableEntity, "addcategory.tmpl", data)
+		err := app.render(w, r, http.StatusUnprocessableEntity, "addupdatecategory.tmpl", data)
 		if err != nil {
-			app.logger.Error("failed to render Category Form", "template", "addcategory.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+			app.logger.Error("failed to render Category Form", "template", "addupdatecategory.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -117,12 +125,13 @@ func (app *application) categoryItem(w http.ResponseWriter, r *http.Request) {
 		app.logger.Error("category not found", "id", id, "error", err)
 	
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormData = map[string]string{
 			"Message": "The category you're looking for doesn't exist.",
 		}
 		
 		// Render custom 404 page
-		err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+		err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
 		if err != nil {
 			app.logger.Error("failed to render 404 page", "error", err)
 			http.Error(w, "Page not found", http.StatusNotFound)
@@ -134,6 +143,7 @@ func (app *application) categoryItem(w http.ResponseWriter, r *http.Request) {
 
 
 	data := NewTemplateData()
+	data.CSRFField = csrf.TemplateField(r)
 	data.CurrentPage="/categories"
 	data.FormData = map[string]string{
 		"CategoryName":         category.CategoryName,
@@ -142,7 +152,7 @@ func (app *application) categoryItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-	err = app.render(w, http.StatusOK, "category-details.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "category-details.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render viewer", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -163,11 +173,12 @@ func (app *application) updateCategoryForm(w http.ResponseWriter, r *http.Reques
 		app.logger.Error("category not found", "id", id, "error", err)
 	
 		data := NewTemplateData()
+		data.CSRFField = csrf.TemplateField(r)
 		data.FormData = map[string]string{
 			"Message": "The Category you're looking for doesn't exist.",
 		}
 		
-		err = app.render(w, http.StatusNotFound, "error-404.tmpl", data)
+		err = app.render(w, r, http.StatusNotFound, "error-404.tmpl", data)
 		if err != nil {
 			app.logger.Error("failed to render 404 page", "error", err)
 			http.Error(w, "Page not found", http.StatusNotFound)
@@ -178,6 +189,8 @@ func (app *application) updateCategoryForm(w http.ResponseWriter, r *http.Reques
 	category := categories[0]
 	data := NewTemplateData()
 	data.CurrentPage="/categories"
+	data.CurrentPageType="update"
+	data.CSRFField = csrf.TemplateField(r)
 	data.FormData = map[string]string{
 		"ID":                 strconv.FormatInt(category.ID, 10), 
 		"CategoryName":         category.CategoryName,
@@ -186,7 +199,7 @@ func (app *application) updateCategoryForm(w http.ResponseWriter, r *http.Reques
 
 }
 
-	err = app.render(w, http.StatusOK, "editcategory.tmpl", data)
+	err = app.render(w, r, http.StatusOK, "addupdatecategory.tmpl", data)
 	if err != nil {
 		app.logger.Error("failed to render viewer", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -232,7 +245,10 @@ func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 		// Check for validation errors
 		if !v.ValidData() {
 			data := NewTemplateData()
+			data.CSRFField = csrf.TemplateField(r)
 			data.FormErrors = v.Errors
+			data.CurrentPage="/categories"
+			data.CurrentPageType="update"
 			data.FormData = map[string]string{
 				"ID":                 idStr,
 				"CategoryName":         categoryName,
@@ -240,9 +256,9 @@ func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 				"CategoryCode":         categoryCode,
 			}
 	
-			err := app.render(w, http.StatusUnprocessableEntity, "editcategory.tmpl", data)
+			err := app.render(w, r, http.StatusUnprocessableEntity, "addupdatecategory.tmpl", data)
 			if err != nil {
-				app.logger.Error("failed to render Category Form", "template", "editcategory.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
+				app.logger.Error("failed to render Category Form", "template", "addupdatecategory.tmpl", "error", err, "url", r.URL.Path, "method", r.Method)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}

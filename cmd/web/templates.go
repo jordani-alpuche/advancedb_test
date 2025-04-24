@@ -5,26 +5,6 @@ import (
 	"path/filepath"
 )
 
-// func newTemplateCache() (map[string]*template.Template, error) {
-// 	cache := map[string]*template.Template{}
-// 	pages, err := filepath.Glob("./ui/html/*.tmpl")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	for _, page := range pages {
-// 		fileName := filepath.Base(page)
-
-// 		ts, err := template.ParseFiles(page)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		cache[fileName] = ts
-// 	}
-
-// 	return cache, nil
-// }
-
 func newTemplateCache() (map[string]*template.Template, error) {
     cache := map[string]*template.Template{}
     
@@ -42,25 +22,31 @@ func newTemplateCache() (map[string]*template.Template, error) {
     for _, page := range pages {
         // Get the filename (e.g., "index.tmpl")
         name := filepath.Base(page)
-        
-        // Skip the layout template when processing individual pages
+
+        // fmt.Printf("\nProcessing template: %s\n", name)
+
         if name == "layout.tmpl" {
+            // Skip the layout.tmpl itself
             continue
         }
-        
-        // Create a template set with the page name
-        ts, err := template.New(name).ParseFiles(layoutPath)
-        if err != nil {
-            return nil, err
-        }
-        
-        // Add the page template to the set
-        ts, err = ts.ParseFiles(page)
-        if err != nil {
-            return nil, err
-        }
-        
-        // Add template to cache
+
+        // Create a new template set
+        var ts *template.Template
+
+        if name == "signin.tmpl" {
+            // Special case: Signin page does NOT use layout
+            ts, err = template.ParseFiles(page)
+            if err != nil {
+                return nil, err
+            }
+        } else {
+            // Normal pages: use layout + page
+            ts, err = template.New(name).ParseFiles(layoutPath, page)
+            if err != nil {
+                return nil, err
+            }
+        } 
+    // Add template to cache
         cache[name] = ts
     }
     

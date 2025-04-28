@@ -104,8 +104,10 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	 productTag, err := app.generateProductTag(productName, productDescription)
 	if err != nil {
 		app.logger.Error("failed to generate product tag", "error", err)
+
+		productTag = err.Error() // Fallback in case of error
 		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		// return
 	}
 	fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
 	

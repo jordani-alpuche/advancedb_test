@@ -17,7 +17,7 @@ type InferenceResponse struct {
 // Function to interact with the Hugging Face Inference API
 func (app *application) generateProductTag(productName, productDescription string) (string, error) {
 	// Replace with your Hugging Face API token
-	apiToken := ""
+	apiToken := "Your_Hugging_Face_API_Token"
 	modelEndpoint := "https://api-inference.huggingface.co/models/facebook/bart-large-mnli"
 
 	payload := map[string]interface{}{

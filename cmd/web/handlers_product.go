@@ -123,7 +123,7 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	if !v.ValidData() {
 		data := NewTemplateData()
 		data.CurrentPage="/product"
-	data.CurrentPageType="create"
+	    data.CurrentPageType="create"
 		data.CSRFField = csrf.TemplateField(r)
 		data.FormErrors = v.Errors
 		data.FormData = map[string]string{
@@ -160,18 +160,6 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 				}
 				// --- End RE-FETCH ---
 
-				productTag, err := app.generateProductTag(productName, productDescription)
-				if err != nil {
-					app.logger.Error("failed to generate product tag", "error", err)
-			
-					productTag = err.Error() // Fallback in case of error
-					// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-					// return
-				}
-				fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
-
-				data.FormData["ProductTag"] = productTag // Add the generated product tag to the form data
-		
 
 		err = app.render(w, r, http.StatusUnprocessableEntity, "addupdateproduct.tmpl", data)
 		if err != nil {
@@ -181,6 +169,18 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+		productTag, err := app.generateProductTag(productName, productDescription)
+				if err != nil {
+					app.logger.Error("failed to generate product tag", "error", err)
+			
+					product.ProductTag = err.Error() // Fallback in case of error
+					// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					// return
+				}
+				fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
+
+				product.ProductTag = productTag // Assign the generated product tag to the variable
 
 	err = app.productInfo.POST(product)
 

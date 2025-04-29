@@ -18,6 +18,7 @@ type TemplateData struct {
 	AlertMessage string // To hold general messages like "Invalid credentials"
 	AlertType    string // e.g., "alert-danger", "alert-success"
 	CSRFField     template.HTML
+	productTags  string
 
 	// New fields for counts
 	ProductCount  int

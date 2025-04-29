@@ -101,15 +101,7 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	qty, _ := strconv.Atoi(productQTY)
 
 	// Call the AI model to generate a product tag
-	 productTag, err := app.generateProductTag(productName, productDescription)
-	if err != nil {
-		app.logger.Error("failed to generate product tag", "error", err)
-
-		productTag = err.Error() // Fallback in case of error
-		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		// return
-	}
-	fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
+	productTagsDefault:="Default"
 	
 	product := &data.ProductData{		
 		ProductName:  productName,
@@ -120,7 +112,7 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 		ProductQTY:  qty,
 		ProductStatus:  productStatus,
 		ProductPurchasedFrom:  productPurchasedFrom,
-		ProductTag: productTag, // Add the generated product tag
+		ProductTag: productTagsDefault, // Add the generated product tag
 	}
 
 	// validate data
@@ -130,6 +122,8 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 	// Check for validation errors
 	if !v.ValidData() {
 		data := NewTemplateData()
+		data.CurrentPage="/product"
+	data.CurrentPageType="create"
 		data.CSRFField = csrf.TemplateField(r)
 		data.FormErrors = v.Errors
 		data.FormData = map[string]string{
@@ -165,6 +159,18 @@ func (app *application) createProducts(w http.ResponseWriter, r *http.Request) {
 					 data.Category = categories // Add categories to the template data
 				}
 				// --- End RE-FETCH ---
+
+				productTag, err := app.generateProductTag(productName, productDescription)
+				if err != nil {
+					app.logger.Error("failed to generate product tag", "error", err)
+			
+					productTag = err.Error() // Fallback in case of error
+					// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					// return
+				}
+				fmt.Printf("\nGenerated Product Tag: %s\n", productTag)
+
+				data.FormData["ProductTag"] = productTag // Add the generated product tag to the form data
 		
 
 		err = app.render(w, r, http.StatusUnprocessableEntity, "addupdateproduct.tmpl", data)
